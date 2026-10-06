@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Backend Mentor
 
-## Getting Started
+A guided learning app that takes you from beginner to production-ready backend engineer with **Node.js and Express**.
 
-First, run the development server:
+There are 26 topics in 7 modules: Foundations → Express Core → Databases → Auth & Security → Performance & Scaling → Production Readiness → Architecture & System Design. Each topic has four steps:
+
+1. **Lesson**: an in-depth built-in explanation with code. You can also have the AI mentor go deeper, explain more simply, or show more real-world examples.
+2. **Real-world case**: a real incident or engineering story (Amazon, Stripe, Netflix, GitHub, Facebook, Equifax, Knight Capital...) and what it teaches.
+3. **Practice**: a production-style problem with progressive hints and acceptance criteria. Submit your code for an **AI code review** with a score, per-criterion feedback and a senior-engineer tip.
+4. **Quiz**: pass it (2/3 or better) to finish the topic.
+
+Completing a topic unlocks the next one. Progress is saved in your browser (localStorage). An **"Ask the mentor"** chat is available on every topic.
+
+## Getting started
 
 ```bash
+npm install
+cp .env.example .env.local   # then put your OpenAI key in .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Variable | Required | Description |
+|---|---|---|
+| `OPENAI_API_KEY` | for AI features | Key from https://platform.openai.com/api-keys |
+| `OPENAI_MODEL` | no | Model for explanations, chat and reviews (default `gpt-5-mini`) |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Without an API key** the app still works. Lessons, case studies, problems, hints and quizzes are all built in. To complete a practice problem without AI, tick every acceptance criterion and choose "Mark as done (self-checked)".
 
-## Learn More
+## Project structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+  app/
+    page.tsx                 Roadmap / dashboard
+    learn/[slug]/page.tsx    Topic page (prerendered for every topic)
+    api/explain/route.ts     Streams AI explanations (deep dive / simpler / examples)
+    api/chat/route.ts        Streams the mentor chat
+    api/review/route.ts      AI code review with structured JSON output
+  components/                UI (tabs, quiz, practice workbench, chat, ...)
+  lib/
+    curriculum.ts            Modules, topics, hints, acceptance criteria, quizzes
+    content/                 Lessons, practice problems and real-world cases per module
+    progress.ts              Progress tracking + topic unlocking (localStorage)
+    openai.ts                OpenAI client, mentor persona, streaming helpers
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+To add a topic, add it to `src/lib/curriculum.ts` and its content to the matching file in `src/lib/content/`. The build fails if a topic has no content.
